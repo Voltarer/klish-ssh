@@ -5,7 +5,7 @@ echo "=== 1. Проверка системных зависимостей (Klish
 MISSING_DEPS=0
 
 # Проверка базовых утилит
-for cmd in git wget curl autoconf automake libtool make gcc; do
+for cmd in git wget curl autoconf automake make gcc; do
     if ! command -v $cmd &>/dev/null; then
         echo "❌ Утилита '$cmd' не найдена."
         MISSING_DEPS=1

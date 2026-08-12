@@ -39,6 +39,8 @@ echo "---------------------------------------------------------"
 
 mkdir -p "$PROJECT_ROOT/mips_docker/lib"
 
+cp -a "$SYSROOT/lib/"* "$PROJECT_ROOT/mips_docker/lib/"
+
 # Копируем бинарник clish
 if [ -f "bin/.libs/clish" ]; then
     cp "bin/.libs/clish" "$PROJECT_ROOT/mips_docker/clish"
