@@ -1,0 +1,6 @@
+*.exe
+build/
+.vscode
+toolchain/
+mips_docker/
+lib/
