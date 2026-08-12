@@ -4,18 +4,18 @@
               xsi:schemaLocation="http://clish.sourceforge.net/XMLSchema
                                   http://clish.sourceforge.net/XMLSchema/clish.xsd">
 
-    <!-- Описание основного режима устройства (Cisco-like prompt) -->
+    <!-- Загружаем базовый плагин для обработки тегов ACTION -->
+    <PLUGIN name="clish"/>
+
     <VIEW name="main_view" prompt="mips-device> ">
 
-        <!-- Требуемая пробная команда: reboot -->
-        <COMMAND name="reboot" 
-                 help="Перезагрузка устройства2">
+        <COMMAND name="reboot" help="Reboot the MIPS device">
             <ACTION>
+                echo "System is going down for reboot..."
                 /sbin/reboot
             </ACTION>
         </COMMAND>
 
-        <!-- Пример составной команды для проверки каркаса -->
         <COMMAND name="show version" 
                  help="Показать информацию о версии системы">
             <ACTION>
@@ -24,7 +24,6 @@
             </ACTION>
         </COMMAND>
 
-        <!-- Команда корректного выхода из SSH-сессии -->
         <COMMAND name="exit" 
                  help="Выход из командной оболочки">
             <ACTION builtin="clish_close" />

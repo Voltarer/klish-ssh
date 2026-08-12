@@ -4,7 +4,6 @@
               xsi:schemaLocation="http://clish.sourceforge.net/XMLSchema
                                   http://clish.sourceforge.net/XMLSchema/clish.xsd">
     
-    <!-- Указываем стартовое представление и приветствие -->
     <STARTUP view="main_view">
         <ACTION>
             echo "=========================================="

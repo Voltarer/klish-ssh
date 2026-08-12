@@ -2,5 +2,8 @@
 build/
 .vscode
 toolchain/
-mips_docker/
+mips_docker/clish_xml
+mips_docker/romfs.tar.gz
+mips_docker/lib
+mips_docker/clish.bin
 lib/

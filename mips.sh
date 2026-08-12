@@ -12,7 +12,7 @@ export PATH="$TOOLCHAIN_BIN:$PATH"
 export SYSROOT="$SYSROOT"
 
 echo "========================================================="
-echo " СБОРКА CLISH (KLISH 2.x) ПОД MIPS (ДИНАМИЧЕСКАЯ) "
+echo " СБОРКА CLISH"
 echo "========================================================="
 
 cd "$KLISH_DIR"
