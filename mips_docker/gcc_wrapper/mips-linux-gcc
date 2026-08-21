@@ -1,0 +1,51 @@
+#!/bin/bash
+
+TOOLCHAIN_BIN="/home/npp3726/Documents/ssh/toolchain/mips-buildroot-linux-uclibc_sdk-buildroot/bin"
+SYSROOT="/home/npp3726/Documents/ssh/toolchain/mips-buildroot-linux-uclibc_sdk-buildroot/mips-buildroot-linux-uclibc/sysroot"
+
+REAL_GCC="$TOOLCHAIN_BIN/mips-linux-gcc"
+OBJCOPY="$TOOLCHAIN_BIN/mips-linux-objcopy"
+
+if [[ "$1" == "--version" ]] || [[ "$1" == "-dumpversion" ]]; then
+    echo "gcc (GCC) 5.4.0"
+    exit 0
+fi
+
+for arg in "$@"; do
+    case "$arg" in
+        --version|-v|-dumpversion|-dumpfullversion|-print-search-dirs|-print-libgcc-file-name|-print-file-name=*|-print-prog-name=*|-print-multi-lib)
+            exec "$REAL_GCC" "$@"
+            ;;
+    esac
+done
+
+MIPS_TARGET=$("$OBJCOPY" --info 2>/dev/null | grep -A 1 "header formats" | tail -n 1 | awk '{print $1}')
+[ -z "$MIPS_TARGET" ] && MIPS_TARGET="elf32-tradlittlemips"
+
+ARGS=()
+for arg in "$@"; do
+    if [[ "$arg" == -I/usr/include* ]]; then
+        ARGS+=("-I$SYSROOT/usr/include/python3.11")
+    elif [[ "$arg" == -L/usr/lib* ]]; then
+        ARGS+=("-L$SYSROOT/usr/lib")
+    
+    elif [[ "$arg" == /usr/lib/python3.11/config* ]]; then
+
+        ARGS+=("-lpython3.11")
+    
+    elif [[ "$arg" == *.o ]] && [ -f "$arg" ]; then
+        if file "$arg" 2>/dev/null | grep -q "x86-64"; then
+            MIPS_O="${arg}_mips.o"
+            "$OBJCOPY" -I elf64-x86-64 -O "$MIPS_TARGET" "$arg" "$MIPS_O"
+            ARGS+=("$MIPS_O")
+            continue
+        fi
+        ARGS+=("$arg")
+    else
+        ARGS+=("$arg")
+    fi
+done
+
+ARGS+=("-mxgot")
+
+exec "$REAL_GCC" "${ARGS[@]}"

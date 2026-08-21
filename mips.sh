@@ -12,7 +12,7 @@ export PATH="$TOOLCHAIN_BIN:$PATH"
 export SYSROOT="$SYSROOT"
 
 echo "========================================================="
-echo " СБОРКА CLISH"
+echo " СБОРКА CLISH "
 echo "========================================================="
 
 cd "$KLISH_DIR"
@@ -25,21 +25,26 @@ if [ ! -f "configure" ]; then
     ./autogen.sh >/dev/null 2>&1
 fi
 
-# Собираем СТАНДАРТНО (без принудительной статики)
+# Собираем с жестко зашитым путем к библиотекам (RPATH)
 ./configure --host=mips-linux \
     CC="mips-linux-gcc --sysroot=$SYSROOT" \
+    LDFLAGS="-Wl,-rpath=/opt/klish/lib" \
     --without-libxml2 \
     --prefix=/usr
 
 PATH=$PATH make -j$(nproc)
 
 echo "---------------------------------------------------------"
-echo "Копирование бинарника и библиотек (плагинов)"
+echo "Копирование бинарника и библиотек для релиза"
 echo "---------------------------------------------------------"
 
-mkdir -p "$PROJECT_ROOT/mips_docker/lib"
+# Создаем папки для экспорта
+mkdir -p "$PROJECT_ROOT/mips_docker"
+mkdir -p "$PROJECT_ROOT/mips_docker/opt_klish_lib"
+mkdir -p "$PROJECT_ROOT/mips_docker/sys_lib" 
 
-cp -a "$SYSROOT/lib/"* "$PROJECT_ROOT/mips_docker/lib/"
+# Копируем системные библиотеки uClibc для Docker/QEMU
+cp -aL "$SYSROOT/lib/"* "$PROJECT_ROOT/mips_docker/sys_lib/" 
 
 # Копируем бинарник clish
 if [ -f "bin/.libs/clish" ]; then
@@ -50,8 +55,8 @@ else
     find . -type f -executable -name "clish" | head -n 1 | xargs -I {} cp {} "$PROJECT_ROOT/mips_docker/clish"
 fi
 
-# Копируем все собранные плагины и библиотеки Klish в нашу папку lib/
-find . -name "*.so*" -exec cp -a {} "$PROJECT_ROOT/mips_docker/lib/" \;
+# Копируем собранные плагины и библиотеки Klish в папку opt_klish_lib/
+find . -name "*.so*" -exec cp -a {} "$PROJECT_ROOT/mips_docker/opt_klish_lib/" \;
 
-echo "✅ УСПЕХ! Бинарник и библиотеки скопированы в mips_docker/"
+echo "✅ УСПЕХ! Бинарник скопирован в mips_docker/, а библиотеки — в mips_docker/opt_klish_lib/"
 file "$PROJECT_ROOT/mips_docker/clish"

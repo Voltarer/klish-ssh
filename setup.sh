@@ -15,3 +15,7 @@ chmod +x "$SCRIPT_DIR"/*.sh
 "$SCRIPT_DIR/scripts/generate_model.sh"
 
 echo "✅ Подготовка успешно завершена! Можно запускать сборку mips.sh."
+
+chmod +x mips.sh
+
+./mips.sh
